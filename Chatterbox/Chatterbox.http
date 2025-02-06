@@ -1,0 +1,6 @@
+@Chatterbox_HostAddress = http://localhost:5257
+
+GET {{Chatterbox_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
