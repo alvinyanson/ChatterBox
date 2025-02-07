@@ -1,1 +1,13 @@
-<button type="button" (click)="sendMessage()">Send Test Message</button>
+<div class="px-4 my-5 text-center">
+    <div class="col-lg-6 mx-auto">
+        <form class="row g-3" [formGroup]="chatForm" (ngSubmit)="sendMessage()">
+            <div class="mb-2">
+                <textarea class="form-control" rows="20" formControlName="messages" readonly></textarea>
+            </div>
+            <div class="input-group">
+              <input type="text" formControlName="message" class="form-control form-control-lg" placeholder="Enter message...">
+              <button [disabled]="chatForm.invalid" type="submit" class="btn btn-primary btn-lg">Send</button>
+            </div>
+          </form>
+    </div>
+</div>
