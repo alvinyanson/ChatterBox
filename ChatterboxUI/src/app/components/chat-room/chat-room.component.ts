@@ -7,7 +7,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { SignalrService } from '../../services/signalr.service';
-import { Message } from '../../models/message';
 
 @Component({
   selector: 'app-chat-room',
