@@ -8,7 +8,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
         type : 'basic',
         icon : 'heroicons_outline:chart-pie',
         link : '/example'
-    }
+    },
+    {
+        id   : 'apps.chat',
+        title: 'Chat',
+        type : 'basic',
+        icon : 'heroicons_outline:chat-bubble-bottom-center-text',
+        link : '/chat',
+    },
 ];
 export const compactNavigation: FuseNavigationItem[] = [
     {
