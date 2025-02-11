@@ -12,6 +12,8 @@ import { Chat, Profile } from '../chat.types';
 import { Subject, takeUntil } from 'rxjs';
 import { NewChatComponent } from '../new-chat/new-chat.component';
 import { ProfileComponent } from '../profile/profile.component';
+import { SignalrService } from '../signalr.service';
+import { contacts } from 'app/mock-api/apps/chat/data';
 
 @Component({
     selector       : 'chat-chats',
@@ -27,6 +29,8 @@ export class ChatsComponent implements OnInit, OnDestroy
     drawerComponent: 'profile' | 'new-chat';
     drawerOpened: boolean = false;
     filteredChats: Chat[];
+    copyFilteredChats: Chat[];
+
     profile: Profile;
     selectedChat: Chat;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -37,6 +41,7 @@ export class ChatsComponent implements OnInit, OnDestroy
     constructor(
         private _chatService: ChatService,
         private _changeDetectorRef: ChangeDetectorRef,
+        private _signalrService: SignalrService
     )
     {
     }
@@ -50,12 +55,17 @@ export class ChatsComponent implements OnInit, OnDestroy
      */
     ngOnInit(): void
     {
+
+        this.connectSignalR();
+
         // Chats
         this._chatService.chats$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((chats: Chat[]) =>
             {
-                this.chats = this.filteredChats = chats;
+                this.copyFilteredChats = chats;
+
+                this.chats = this.filteredChats = chats.slice(0, 1);
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -148,5 +158,42 @@ export class ChatsComponent implements OnInit, OnDestroy
     trackByFn(index: number, item: any): any
     {
         return item.id || index;
+    }
+
+
+    private connectSignalR(): void {
+        this._signalrService.connect().then(() => {
+            console.log('FE Connected: 🔥🔥🔥!');
+
+            this._signalrService
+                .getHubConnection()
+                .on('SuccessSendMessage', (user, message) => {
+                    console.log({ user, message });
+
+                    // const incomingMsg = {
+                    //     chatId: 'ff6bc7f1-449a-4419-af62-b89ce6cae0aa',
+                    //     contact: contacts[0],
+                    //     contactId: 'cfaad35d-07a3-4447-a6c3-d8c3d54fd5df',
+                    //     createdAt: '2025-02-03T18:56:46.946+08:00',
+                    //     id: '2563bf15-4d8e-4e36-8526-3e709fb497d2',
+                    //     isMine: true,
+                    //     value: message,
+                    // };
+
+
+                    let incomingMsg = this.copyFilteredChats[1];
+                    incomingMsg.sessionId = user;
+
+                    this.filteredChats.push(incomingMsg);
+
+                    console.log('incomingMsg', incomingMsg)
+
+
+                    // this.chatForm.controls.message.setValue('');
+
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
+                });
+        });
     }
 }

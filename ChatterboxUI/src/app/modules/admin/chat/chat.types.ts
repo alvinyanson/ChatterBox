@@ -52,4 +52,5 @@ export interface Chat
         value?: string;
         createdAt?: string;
     }[];
+    sessionId?: string;
 }

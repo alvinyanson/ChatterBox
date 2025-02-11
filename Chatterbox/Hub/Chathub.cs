@@ -19,7 +19,8 @@ namespace Chatterbox.Hub
 
         public async Task Send(string user, string message)
         {
-            await Clients.All.SuccessSendMessage(user, message);
+            await Clients.Client(user).SuccessSendMessage(user, message);
+            //await Clients.All.SuccessSendMessage(user, message);
         }
 
     }

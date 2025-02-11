@@ -224,32 +224,62 @@ export class ConversationComponent implements OnInit, OnDestroy {
 
     sendMessage(): void {
         if (this.chatForm.invalid) return;
+        const connectionId = this._signalrService.getHubConnection().connectionId;
+        this.chatForm.patchValue({
+            user: connectionId
+        });
         this._signalrService.send(this.currentUser, this.message);
     }
 
     private connectSignalR(): void {
-        this._signalrService.connect().then(() => {
-            console.log('FE Connected: 🔥🔥🔥!');
+        // this._signalrService.connect().then(() => {
+        //     console.log('FE Connected: 🔥🔥🔥!');
 
-            this._signalrService
-                .getHubConnection()
-                .on('SuccessSendMessage', (user, message) => {
-                    console.log({ user, message });
+        //     this._signalrService
+        //         .getHubConnection()
+        //         .on('SuccessSendMessage', (user, message) => {
+        //             console.log({ user, message });
 
-                    const incomingMsg = {
-                        chatId: 'ff6bc7f1-449a-4419-af62-b89ce6cae0aa',
-                        contactId: 'cfaad35d-07a3-4447-a6c3-d8c3d54fd5df',
-                        createdAt: '2025-02-03T18:56:46.946+08:00',
-                        id: '2563bf15-4d8e-4e36-8526-3e709fb497d2',
-                        isMine: true,
-                        value: message,
-                    };
+        //             const incomingMsg = {
+        //                 chatId: '4459a3f0-b65e-4df2-8c37-6ec72fcc4b31',
+        //                 contactId: '16b9e696-ea95-4dd8-86c4-3caf705a1dc6',
+        //                 createdAt: '2025-02-03T18:56:46.946+08:00',
+        //                 id: '2563bf15-4d8e-4e36-8526-3e709fb497d2',
+        //                 isMine: this.chat.sessionId === this._signalrService.getHubConnection().connectionId,
+        //                 value: message,
+        //             };
 
-                    this.chat.messages.push(incomingMsg);
+        //             this.chat.messages.push(incomingMsg);
 
-                    // Mark for check
-                    this._changeDetectorRef.markForCheck();
-                });
-        });
+        //             this.chatForm.controls.message.setValue('');
+
+        //             // // Mark for check
+        //             // this._changeDetectorRef.markForCheck();
+        //         });
+        // });
+
+        this._signalrService
+            .getHubConnection()
+            .on('SuccessSendMessage', (user, message) => {
+                console.log({ user, message });
+
+                const incomingMsg = {
+                    chatId: '4459a3f0-b65e-4df2-8c37-6ec72fcc4b31',
+                    contactId: '16b9e696-ea95-4dd8-86c4-3caf705a1dc6',
+                    createdAt: '2025-02-03T18:56:46.946+08:00',
+                    id: '2563bf15-4d8e-4e36-8526-3e709fb497d2',
+                    isMine:
+                        this.chat.sessionId ===
+                        this._signalrService.getHubConnection().connectionId,
+                    value: message,
+                };
+
+                this.chat.messages.push(incomingMsg);
+
+                this.chatForm.controls.message.setValue('');
+
+                // // Mark for check
+                // this._changeDetectorRef.markForCheck();
+            });
     }
 }

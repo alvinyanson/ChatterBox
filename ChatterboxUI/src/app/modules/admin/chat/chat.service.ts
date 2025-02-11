@@ -126,12 +126,13 @@ export class ChatService
      *
      * @param id
      */
-    getChatById(id: string): Observable<any>
+    getChatById(id: string, sessionId: string): Observable<any>
     {
-        return this._httpClient.get<Chat>('api/apps/chat/chat', {params: {id}}).pipe(
+        return this._httpClient.get<Chat>('api/apps/chat/chat', {params: {id, sessionId}}).pipe(
             map((chat) =>
             {
                 // Update the chat
+                chat.sessionId = sessionId;
                 this._chat.next(chat);
 
                 // Return the chat

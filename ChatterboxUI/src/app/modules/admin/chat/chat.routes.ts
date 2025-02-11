@@ -18,7 +18,7 @@ const conversationResolver = (route: ActivatedRouteSnapshot, state: RouterStateS
     const chatService = inject(ChatService);
     const router = inject(Router);
 
-    return chatService.getChatById(route.paramMap.get('id')).pipe(
+    return chatService.getChatById(route.paramMap.get('id'), route.paramMap.get('sessionId')).pipe(
         // Error here means the requested chat is not available
         catchError((error) =>
         {
@@ -58,6 +58,13 @@ export default [
                     },
                     {
                         path     : ':id',
+                        component: ConversationComponent,
+                        resolve  : {
+                            conversation: conversationResolver,
+                        },
+                    },
+                    {
+                        path     : ':id/:sessionId',
                         component: ConversationComponent,
                         resolve  : {
                             conversation: conversationResolver,
