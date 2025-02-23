@@ -37,6 +37,8 @@ import {
     ReactiveFormsModule,
     Validators,
 } from '@angular/forms';
+import { v4 as uuidv4 } from 'uuid';
+
 
 @Component({
     selector: 'chat-conversation',
@@ -224,62 +226,30 @@ export class ConversationComponent implements OnInit, OnDestroy {
 
     sendMessage(): void {
         if (this.chatForm.invalid) return;
-        const connectionId = this._signalrService.getHubConnection().connectionId;
         this.chatForm.patchValue({
-            user: connectionId
+            user: this.chat.sessionId
         });
         this._signalrService.send(this.currentUser, this.message);
+        this.chatForm.controls.message.setValue('');
     }
 
     private connectSignalR(): void {
-        // this._signalrService.connect().then(() => {
-        //     console.log('FE Connected: 🔥🔥🔥!');
-
-        //     this._signalrService
-        //         .getHubConnection()
-        //         .on('SuccessSendMessage', (user, message) => {
-        //             console.log({ user, message });
-
-        //             const incomingMsg = {
-        //                 chatId: '4459a3f0-b65e-4df2-8c37-6ec72fcc4b31',
-        //                 contactId: '16b9e696-ea95-4dd8-86c4-3caf705a1dc6',
-        //                 createdAt: '2025-02-03T18:56:46.946+08:00',
-        //                 id: '2563bf15-4d8e-4e36-8526-3e709fb497d2',
-        //                 isMine: this.chat.sessionId === this._signalrService.getHubConnection().connectionId,
-        //                 value: message,
-        //             };
-
-        //             this.chat.messages.push(incomingMsg);
-
-        //             this.chatForm.controls.message.setValue('');
-
-        //             // // Mark for check
-        //             // this._changeDetectorRef.markForCheck();
-        //         });
-        // });
-
         this._signalrService
             .getHubConnection()
-            .on('SuccessSendMessage', (user, message) => {
+            .on('SuccessSendMessage', (user, message, isMine) => {
                 console.log({ user, message });
 
                 const incomingMsg = {
-                    chatId: '4459a3f0-b65e-4df2-8c37-6ec72fcc4b31',
-                    contactId: '16b9e696-ea95-4dd8-86c4-3caf705a1dc6',
-                    createdAt: '2025-02-03T18:56:46.946+08:00',
-                    id: '2563bf15-4d8e-4e36-8526-3e709fb497d2',
-                    isMine:
-                        this.chat.sessionId ===
-                        this._signalrService.getHubConnection().connectionId,
+                    chatId: this.chat.id,
+                    contactId: this.chat.contactId,
+                    createdAt: new Date().toISOString(),
+                    id: uuidv4(),
+                    isMine: isMine,
                     value: message,
                 };
 
                 this.chat.messages.push(incomingMsg);
-
                 this.chatForm.controls.message.setValue('');
-
-                // // Mark for check
-                // this._changeDetectorRef.markForCheck();
             });
     }
 }

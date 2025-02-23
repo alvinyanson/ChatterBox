@@ -116,6 +116,7 @@
                         <ng-container *ngIf="filteredChats.length > 0; else noChats">
                             <ng-container *ngFor="let chat of filteredChats; trackBy: trackByFn">
                                 <a
+                                    *ngIf="chat.sessionId !== sessionId"
                                     class="z-20 flex items-center py-5 px-8 cursor-pointer border-b"
                                     [ngClass]="{'hover:bg-gray-100 dark:hover:bg-hover': !selectedChat || selectedChat.id !== chat.id,
                                                 'bg-primary-50 dark:bg-hover': selectedChat && selectedChat.id === chat.id}"
