@@ -169,42 +169,46 @@ export class ChatsComponent implements OnInit, OnDestroy {
         return JSON.parse(localStorage.getItem('filteredChats')) || [];
     }
 
-    isExistFilteredChats() {
-        return !!localStorage.getItem('filteredChats');
-    }
-
-    isOnlineUser(contactId: string) {
-        return this.filteredChats.some((chat) => chat.contactId === contactId);
+    getInitUser(): Chat | null {
+        return JSON.parse(localStorage.getItem('initUser'));
     }
 
     private connectSignalR(): void {
-        this.chats = this.getFilteredChats();
-
-        this.filteredChats = this.getFilteredChats();
-
-        this._changeDetectorRef.markForCheck();
+        this.refreshChatList();
 
         this._signalrService.connect().then(() => {
+            // SUCCESS CONNECTION
             console.log('FE Connected: 🔥🔥🔥!');
 
-            let currentIndex = Number(localStorage.getItem('nextIndex')) || 0;
+            const sessionId =
+                this._signalrService.getHubConnection().connectionId;
 
-            if(currentIndex > 1) return;
+            this.sessionId = sessionId;
 
-            const incomingUser = this.copyFilteredChats[currentIndex];
+            let initUser = this.getInitUser();
 
-            if (incomingUser) {
-                incomingUser.sessionId =
-                    this._signalrService.getHubConnection().connectionId;
+            if (!initUser) {
+                let currentIndex =
+                    Number(localStorage.getItem('nextIndex')) || 0;
 
-                this.sessionId = incomingUser.sessionId;
-                this.chats.push(incomingUser);
-                this.filteredChats.push(incomingUser);
+                initUser = this.copyFilteredChats[0];
+
+                localStorage.setItem(
+                    'initUser',
+                    JSON.stringify(this.copyFilteredChats[0])
+                );
+
+                initUser.sessionId = this.sessionId;
+
+                this.chats.push(initUser);
+
+                this.filteredChats.push(initUser);
 
                 localStorage.setItem(
                     'filteredChats',
                     JSON.stringify(this.filteredChats)
                 );
+
                 localStorage.setItem('nextIndex', String(currentIndex + 1));
 
                 this._changeDetectorRef.markForCheck();
@@ -214,37 +218,79 @@ export class ChatsComponent implements OnInit, OnDestroy {
             this._signalrService
                 .getHubConnection()
                 .on('JoinParty', (user, message) => {
+                    console.log('Join party: ', { user, message });
+
+                    const currentIndex =
+                        Number(localStorage.getItem('nextIndex')) || 0;
+
+                    const incomingUser = this.copyFilteredChats[currentIndex];
+
+                    if (incomingUser) {
+                        incomingUser.sessionId = user;
+
+                        this.chats.push(incomingUser);
+                        this.filteredChats.push(incomingUser);
+
+                        localStorage.setItem(
+                            'filteredChats',
+                            JSON.stringify(this.filteredChats)
+                        );
+
+                        localStorage.setItem(
+                            'nextIndex',
+                            String(currentIndex + 1)
+                        );
+                    }
+
                     this.chats = this.getFilteredChats();
                     this.filteredChats = this.getFilteredChats();
 
                     this._changeDetectorRef.markForCheck();
                 });
 
+            // LEFT A PARTY
             this._signalrService
                 .getHubConnection()
                 .on('LeftParty', (user, message) => {
                     console.log('Left party: ', { user, message });
 
-                    const disconnectedUserIndex = this.filteredChats.findIndex(u => u.sessionId === user);
+                    const disconnectedUserIndex = this.filteredChats.findIndex(
+                        (u) => u.sessionId === user
+                    );
 
-                    this.chats.splice(disconnectedUserIndex, 1);
-                    this.filteredChats = this.chats;
+                    if (disconnectedUserIndex !== -1) {
+                        this.chats.splice(disconnectedUserIndex, 1);
+                    }
 
+                    // Update filteredChats reference
+                    this.filteredChats = [...this.chats];
+
+                    // Persist filteredChats to localStorage
                     localStorage.setItem(
                         'filteredChats',
                         JSON.stringify(this.filteredChats)
                     );
 
-                    let currentIndex = Number(localStorage.getItem('nextIndex')) || 0;
+                    // Update nextIndex in localStorage
+                    const currentIndex =
+                        Number(localStorage.getItem('nextIndex')) || 0;
+                    localStorage.setItem('nextIndex', String(currentIndex - 1));
 
-                    localStorage.setItem('nextIndex', String(currentIndex - 1))
-
+                    // Refresh chat lists
                     this.chats = this.getFilteredChats();
+                    this.filteredChats = [...this.chats];
 
-                    this.filteredChats = this.getFilteredChats();
-
+                    // Trigger change detection
                     this._changeDetectorRef.markForCheck();
                 });
         });
+    }
+
+    private refreshChatList(): void {
+        this.chats = this.getFilteredChats();
+
+        this.filteredChats = [...this.chats];
+
+        this._changeDetectorRef.markForCheck();
     }
 }
