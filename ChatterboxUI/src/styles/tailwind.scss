@@ -2,3 +2,8 @@
 /*  @ Main Tailwind file for injecting utilities.
 /* ----------------------------------------------------------------------------------------------------- */
 @tailwind utilities;
+
+
+.flex-grow-1 {
+    flex-grow: 1;
+}
