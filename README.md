@@ -110,3 +110,5 @@ On Tab 2, see that the sent message has been received:
 ## Limitations
 
 This application isn’t meant to cover every possible scenario; it’s simply a demonstration of how .NET SignalR works. That's why the demo only shows two users. If you open a third tab, it will create another user, and you can send messages between Tab 1 and Tab 3. (Tab 1 send a message to Tab 3).
+
+If you notice something isn't working correctly and want to start fresh, clear any local data. Also, ensure that all open tabs running the application are closed.
