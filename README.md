@@ -31,18 +31,11 @@ After cloning, open the solution the `Chatterbox.sln`
 
 ## Task 2 - Run NET backend
 
-Open Developer Command Prompt in Visual Studio, make sure you are in the backend root directory: (Chatterbox/Chatterbox)
-
-    cd Chatterbox
-
-In terminal, run the project:
-
-    dotnet run
-
+Press F5 to compile and run the project
 
 After successfully compiling, the backend should run in this URL: (you don't have to open this URL)
 
-    http://localhost:5257
+    https://localhost:7225
 
 
 ## Task 3 - Run Angular frontend
