@@ -2,7 +2,7 @@
 
 ## Contents
 - [Task 1 - Environment Setup](#task-1---environment-setup)
-- [Task 2 - Run .NET backend](#task-2---run-.net-backend)
+- [Task 2 - Run .NET backend](#task-2---run-net-backend)
 - [Task 3 - Run Angular frontend](#task-3---run-angular-frontend)
 
 
@@ -29,7 +29,7 @@ After cloning, open the solution the `Chatterbox.sln`
     Angular: 16.0.3
 
 
-## Task 2 - Run .NET backend
+## Task 2 - Run NET backend
 
 Open Developer Command Prompt in Visual Studio, make sure you are in the backend root directory: (Chatterbox/Chatterbox)
 
