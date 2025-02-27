@@ -173,6 +173,12 @@ export class ChatsComponent implements OnInit, OnDestroy {
         return JSON.parse(localStorage.getItem('initUser'));
     }
 
+    clearLocalData(): void {
+        localStorage.removeItem('initUser');
+        localStorage.removeItem('filteredChats');
+        localStorage.removeItem('nextIndex');
+    }
+
     private connectSignalR(): void {
         this.refreshChatList();
 
