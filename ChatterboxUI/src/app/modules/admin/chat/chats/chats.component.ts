@@ -177,6 +177,8 @@ export class ChatsComponent implements OnInit, OnDestroy {
         localStorage.removeItem('initUser');
         localStorage.removeItem('filteredChats');
         localStorage.removeItem('nextIndex');
+
+        window.location.href = "/chat";
     }
 
     private connectSignalR(): void {
